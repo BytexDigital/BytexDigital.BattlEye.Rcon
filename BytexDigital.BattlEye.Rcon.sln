@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytexDigital.BattlEye.Rcon", "BytexDigital.BattlEye.Rcon\BytexDigital.BattlEye.Rcon.csproj", "{DE412859-5C46-4466-A8D9-C17166AD9ECF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE412859-5C46-4466-A8D9-C17166AD9ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE412859-5C46-4466-A8D9-C17166AD9ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE412859-5C46-4466-A8D9-C17166AD9ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE412859-5C46-4466-A8D9-C17166AD9ECF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A7E4487-E310-45A3-A49E-62B72025105F}
+	EndGlobalSection
+EndGlobal

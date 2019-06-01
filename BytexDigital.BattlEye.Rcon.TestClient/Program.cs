@@ -2,6 +2,7 @@
 using BytexDigital.BattlEye.Rcon.Domain;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BytexDigital.BattlEye.Rcon.TestClient {
     class Program {
@@ -16,19 +17,16 @@ namespace BytexDigital.BattlEye.Rcon.TestClient {
             networkClient.Connect();
             networkClient.WaitUntilConnected();
 
-            bool bansSuccess = networkClient.Fetch(new GetBansRequest(), 5000, out List<PlayerBan> bannedPlayers);
+            bool requestSuccess = networkClient.Fetch(
+                command: new GetPlayersRequest(),
+                timeout: 5000,
+                result: out List<Player> onlinePlayers);
 
-            if (bansSuccess) {
-                Console.WriteLine($"Players banned: {bannedPlayers.Count}");
-            }
-
-            bool playersSuccess = networkClient.Fetch(new GetPlayersRequest(), 5000, out List<Player> onlinePlayers);
-
-            if (playersSuccess) {
+            if (requestSuccess) {
                 Console.WriteLine($"Players online: {onlinePlayers.Count}");
             }
 
-            networkClient.Send(new SendMessageCommand("This is a test message"));
+            networkClient.Send(new SendMessageCommand("This is a global message"));
 
             Console.ReadLine();
         }

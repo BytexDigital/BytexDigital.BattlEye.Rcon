@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BytexDigital.BattlEye.Rcon.Commands {
-    public class GetPlayersRequest : Command, IHandlesResponse {
+    public class GetPlayersRequest : Command, IHandlesResponse, IProvidesResponse<List<Player>> {
         public List<Player> Players { get; private set; }
 
         public GetPlayersRequest() : base("players") {
@@ -40,6 +40,10 @@ namespace BytexDigital.BattlEye.Rcon.Commands {
             }
 
             Players = players;
+        }
+
+        public List<Player> GetResponse() {
+            return Players;
         }
     }
 }

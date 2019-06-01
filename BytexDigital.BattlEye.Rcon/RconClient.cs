@@ -13,6 +13,7 @@ namespace BytexDigital.BattlEye.Rcon {
     public class RconClient {
         public int ReconnectInterval { get; set; } = 2500;
         public bool ReconnectOnFailure { get; set; } = true;
+        public bool IsConnected { get; private set; } = false;
 
         public event EventHandler Connected;
         public event EventHandler Disconnected;
@@ -37,16 +38,34 @@ namespace BytexDigital.BattlEye.Rcon {
 
         public CommandNetworkRequest Send(string command) {
             var request = new CommandNetworkRequest(command);
-            _networkConnection.Send(request);
+            _networkConnection?.Send(request);
 
             return request;
         }
 
         public CommandNetworkRequest Send(Command command) {
             var request = new CommandNetworkRequest(command);
-            _networkConnection.Send(request);
+            _networkConnection?.Send(request);
 
             return request;
+        }
+
+        public bool Fetch<ResponseType>(Command command, int timeout, out ResponseType result) {
+            if (!(command is IProvidesResponse<ResponseType>)) {
+                throw new InvalidOperationException("Given command does not support this operation " +
+                    "(Either this command does not provide a response or the response type is different to the given one.");
+            }
+
+            var request = Send(command);
+            bool success = request.WaitUntilResponseReceived(timeout);
+
+            if (success && request.ResponseReceived) {
+                result = (command as IProvidesResponse<ResponseType>).GetResponse();
+                return true;
+            }
+
+            result = default(ResponseType);
+            return false;
         }
 
         public bool WaitUntilConnected(int timeout) {
@@ -107,8 +126,9 @@ namespace BytexDigital.BattlEye.Rcon {
 
             if (response.Success) {
                 _networkConnection.BeginHeartbeat();
-
                 _connected.Set();
+
+                IsConnected = true;
                 Connected?.Invoke(this, new EventArgs());
             }
 
@@ -135,6 +155,7 @@ namespace BytexDigital.BattlEye.Rcon {
             Disconnected?.Invoke(this, new EventArgs());
             _connected.Reset();
             _connectionCancelTokenSource?.Cancel();
+            IsConnected = false;
 
             if (ReconnectOnFailure) {
                 Connect();

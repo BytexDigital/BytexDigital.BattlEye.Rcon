@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace BytexDigital.BattlEye.Rcon.Commands {
-    public class GetBansRequest : Command, IHandlesResponse {
+    public class GetBansRequest : Command, IHandlesResponse, IProvidesResponse<List<PlayerBan>> {
         public List<PlayerBan> BannedPlayers { get; private set; }
 
         public GetBansRequest() : base("bans") {
@@ -56,6 +56,10 @@ namespace BytexDigital.BattlEye.Rcon.Commands {
             }
 
             BannedPlayers = bannedPlayers;
+        }
+
+        public List<PlayerBan> GetResponse() {
+            return BannedPlayers;
         }
     }
 }

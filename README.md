@@ -43,6 +43,9 @@ foreach (var player in onlinePlayers.Where(x => x.Id % 2 != 0)) {
 }
 ```
 
+### Events
+A `RconClient` offers the ability to hook up eventhandlers for specific events. The currently implemented events are when a player connects (`PlayerConnected`), disconnects (`PlayerDisconnected`), when a message not bound to a request is received ( for example a chat message) (`MessageReceived`) and when a player is removed due to a kick or ban (`PlayerRemoved`).
+
 # License
 Copyright 2019 Bytex Digital UG (haftungsbeschränkt)
 

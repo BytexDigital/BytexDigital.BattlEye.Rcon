@@ -14,6 +14,7 @@ namespace BytexDigital.BattlEye.Rcon {
         public int ReconnectInterval { get; set; } = 2500;
         public bool ReconnectOnFailure { get; set; } = true;
         public bool IsConnected { get; private set; } = false;
+        public bool IsRunning { get; private set; } = false;
 
         public event EventHandler Connected;
         public event EventHandler Disconnected;
@@ -77,9 +78,15 @@ namespace BytexDigital.BattlEye.Rcon {
         }
 
         public bool Connect() {
+            if (IsRunning) {
+                return IsConnected;
+            }
+
             bool success = AttemptConnect();
 
             if (!success && ReconnectOnFailure) {
+                IsRunning = true;
+
                 Task.Run(async () => {
                     while (!_cancellationTokenSource.IsCancellationRequested) {
                         await Task.Delay(ReconnectInterval);
@@ -156,6 +163,7 @@ namespace BytexDigital.BattlEye.Rcon {
             _connected.Reset();
             _connectionCancelTokenSource?.Cancel();
             IsConnected = false;
+            IsRunning = false;
 
             if (ReconnectOnFailure) {
                 Connect();

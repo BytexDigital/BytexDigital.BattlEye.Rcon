@@ -33,6 +33,7 @@ namespace BytexDigital.BattlEye.Rcon {
         }
 
         internal void MarkSent() {
+            Sent = true;
             SentTimeUtc = DateTime.UtcNow;
         }
     }

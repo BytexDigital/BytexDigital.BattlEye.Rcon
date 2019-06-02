@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytexDigital.BattlEye.Rcon", "BytexDigital.BattlEye.Rcon\BytexDigital.BattlEye.Rcon.csproj", "{DE412859-5C46-4466-A8D9-C17166AD9ECF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytexDigital.BattlEye.Rcon", "BytexDigital.BattlEye.Rcon\BytexDigital.BattlEye.Rcon.csproj", "{DE412859-5C46-4466-A8D9-C17166AD9ECF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BytexDigital.BattlEye.Rcon.TestClient", "BytexDigital.BattlEye.Rcon.TestClient\BytexDigital.BattlEye.Rcon.TestClient.csproj", "{5BBA5BCD-5361-483B-A928-92C8F0095293}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BytexDigital.BattlEye.Rcon.TestClient", "BytexDigital.BattlEye.Rcon.TestClient\BytexDigital.BattlEye.Rcon.TestClient.csproj", "{5BBA5BCD-5361-483B-A928-92C8F0095293}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{81656272-EC79-423C-B2B1-1CC3D8D45324}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.md = LICENSE.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

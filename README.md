@@ -1,13 +1,20 @@
 # BytexDigital.BattlEye.Rcon
 This library provides an easy way of communicating with a BattlEye RCON server.
 
-# Usage
-### Creating an RconClient
+## Installation
+[nuget package](https://www.nuget.org/packages/BytexDigital.BattlEye.Rcon/)
+```
+Install-Package BytexDigital.BattlEye.Rcon -Version 1.0.0
+```
+
+
+## Usage
+#### Creating an RconClient
 ```cs
 RconClient networkClient = new RconClient("127.0.0.1", 2310, "testPassword");
 ```
 
-### Connecting
+#### Connecting
 Notice: By default, the RconClient will attempt reconnecting after a initial `Connect()` call or when the client is disconnected.
 You can adjust this behaviour by setting `ReconnectInterval` and `ReconnectOnFailure`.
 ```cs
@@ -18,12 +25,12 @@ bool initialConnectSuccessful = networkClient.Connect();
 networkClient.WaitUntilConnected();
 ```
 
-### Sending a request that does not expect a response
+#### Sending a request that does not expect a response
 ```cs
 networkClient.Send(new SendMessageCommand("This is a global message"));
 ```
 
-### Sending a request that returns something
+#### Sending a request that returns something
 ```cs
 bool requestSuccess = networkClient.Fetch(
 	command: new GetPlayersRequest(),
@@ -31,7 +38,7 @@ bool requestSuccess = networkClient.Fetch(
 	result: out List<Player> onlinePlayers);
 ```
 
-### Example: Request players and send everyone with an odd ID a personal message
+#### Example: Request players and send everyone with an odd ID a personal message
 ```cs
 bool requestSuccess = networkClient.Fetch(
 	command: new GetPlayersRequest(),
@@ -43,7 +50,7 @@ foreach (var player in onlinePlayers.Where(x => x.Id % 2 != 0)) {
 }
 ```
 
-### Events
+#### Events
 A `RconClient` offers the ability to hook up eventhandlers for specific events. The currently implemented events are when a player connects (`PlayerConnected`), disconnects (`PlayerDisconnected`), when a message not bound to a request is received ( for example a chat message) (`MessageReceived`) and when a player is removed due to a kick or ban (`PlayerRemoved`).
 
 # License

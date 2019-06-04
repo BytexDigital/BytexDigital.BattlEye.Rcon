@@ -231,8 +231,10 @@ namespace BytexDigital.BattlEye.Rcon {
             IsConnected = false;
             IsRunning = false;
 
-            if (ReconnectOnFailure) {
-                Connect();
+            if (_connectionCancelTokenSource != null && _connectionCancelTokenSource.IsCancellationRequested) {
+                if (ReconnectOnFailure) {
+                    Connect();
+                }
             }
         }
     }

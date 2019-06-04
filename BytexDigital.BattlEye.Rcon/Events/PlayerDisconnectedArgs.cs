@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BytexDigital.BattlEye.Rcon.Events {
-    public class PlayerDisconnectedArgs {
+    public class PlayerDisconnectedArgs : EventArgs {
         public int Id { get; private set; }
         public string Name { get; private set; }
 

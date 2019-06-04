@@ -8,11 +8,14 @@ using System.Threading;
 
 namespace BytexDigital.BattlEye.Rcon.Commands {
     /// <summary>
-    /// Requests current list of banned players and automatically parses it, exposing the result in <see cref="GetBansRequest.BannedPlayers"/>.
+    /// Requests current list of banned players and automatically parses it, exposing the result in <see cref="BannedPlayers"/>.
     /// </summary>
     public class GetBansRequest : Command, IHandlesResponse, IProvidesResponse<List<PlayerBan>> {
         public List<PlayerBan> BannedPlayers { get; private set; }
 
+        /// <summary>
+        /// Requests current list of banned players and automatically parses it, exposing the result in <see cref="BannedPlayers"/>.
+        /// </summary>
         public GetBansRequest() : base("bans") {
         }
 

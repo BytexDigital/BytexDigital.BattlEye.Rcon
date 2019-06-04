@@ -7,6 +7,9 @@ namespace BytexDigital.BattlEye.Rcon.Commands {
     /// Requests the currently available missions on the server. Appears to be broken.
     /// </summary>
     public class GetMissionsRequest : Command, IHandlesResponse {
+        /// <summary>
+        /// Requests the currently available missions on the server. Appears to be broken.
+        /// </summary>
         public GetMissionsRequest() : base("missions") {
         }
 

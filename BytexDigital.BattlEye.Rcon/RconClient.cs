@@ -179,6 +179,7 @@ namespace BytexDigital.BattlEye.Rcon {
         public void Disconnect() {
             _cancellationTokenSource?.Cancel();
             _connectionCancelTokenSource?.Cancel();
+            Disconnected?.Invoke(this, new EventArgs());
         }
 
         private bool AttemptConnect() {
@@ -228,6 +229,10 @@ namespace BytexDigital.BattlEye.Rcon {
         private void OnMessageReceived(object sender, string e) => MessageReceived?.Invoke(sender, e);
 
         private void OnDisconnected(object sender, EventArgs e) {
+            if (!IsConnected) {
+                return;
+            }
+
             Disconnected?.Invoke(this, new EventArgs());
             _connected.Reset();
             _connectionCancelTokenSource?.Cancel();

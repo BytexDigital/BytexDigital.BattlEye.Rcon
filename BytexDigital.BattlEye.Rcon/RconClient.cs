@@ -28,6 +28,10 @@ namespace BytexDigital.BattlEye.Rcon {
         /// Returns true if the client is currently connected or automatically trying to reconnect.
         /// </summary>
         public bool IsRunning { get; private set; } = false;
+        /// <summary>
+        /// <see cref="IPEndPoint"/> the client will attempt connecting to.
+        /// </summary>
+        public IPEndPoint RemoteEndpoint { get; }
 
         /// <summary>
         /// Triggered when the client successfully connects to an rcon server.
@@ -54,7 +58,6 @@ namespace BytexDigital.BattlEye.Rcon {
         /// </summary>
         public event EventHandler<PlayerRemovedArgs> PlayerRemoved;
 
-        private IPEndPoint _remoteEndpoint;
         private string _password;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _connectionCancelTokenSource;
@@ -64,7 +67,7 @@ namespace BytexDigital.BattlEye.Rcon {
         public RconClient(string ip, int port, string password) : this(new IPEndPoint(IPAddress.Parse(ip), port), password) { }
 
         public RconClient(IPEndPoint remoteEndpoint, string password) {
-            _remoteEndpoint = remoteEndpoint;
+            RemoteEndpoint = remoteEndpoint;
             _password = password;
         }
 
@@ -180,7 +183,7 @@ namespace BytexDigital.BattlEye.Rcon {
 
         private bool AttemptConnect() {
             _connectionCancelTokenSource = new CancellationTokenSource();
-            _networkConnection = new NetworkConnection(_remoteEndpoint, _connectionCancelTokenSource.Token);
+            _networkConnection = new NetworkConnection(RemoteEndpoint, _connectionCancelTokenSource.Token);
             _networkConnection.BeginReceiving();
             _networkConnection.Disconnected += OnDisconnected;
             _networkConnection.MessageReceived += OnMessageReceived;

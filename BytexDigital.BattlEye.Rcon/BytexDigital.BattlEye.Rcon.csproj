@@ -12,6 +12,8 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
     <Version>1.0.1</Version>
+    <PackageReleaseNotes>- Added documentation for various classes
+- Disconnect implementation now works properly</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

@@ -6,6 +6,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BytexDigital.BattlEye.Rcon.Commands {
+    /// <summary>
+    /// Requests current playerlist and automatically parses it, exposing the result in <see cref="GetPlayersRequest.Players"/>.
+    /// </summary>
     public class GetPlayersRequest : Command, IHandlesResponse, IProvidesResponse<List<Player>> {
         public List<Player> Players { get; private set; }
 

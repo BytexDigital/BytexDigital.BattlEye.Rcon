@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace BytexDigital.BattlEye.Rcon.Commands {
+    /// <summary>
+    /// Requests the server to restart the currently running mission.
+    /// </summary>
     public class RestartMissionCommand : Command {
         public RestartMissionCommand() : base("#restart") {
         }

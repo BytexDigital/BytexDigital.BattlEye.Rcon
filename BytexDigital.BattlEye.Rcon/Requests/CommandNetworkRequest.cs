@@ -9,6 +9,8 @@ namespace BytexDigital.BattlEye.Rcon.Requests {
         public string Payload { get; private set; }
         public Command Command { get; private set; }
 
+        private readonly StringEncoder _stringEncoder = new StringEncoder();
+
         public CommandNetworkRequest(string payload) {
             Payload = payload;
         }
@@ -23,7 +25,7 @@ namespace BytexDigital.BattlEye.Rcon.Requests {
 
             bytes.Add(0x01);
             bytes.Add(SequenceNumber.Value);
-            bytes.AddRange(Encoding.ASCII.GetBytes(Payload));
+            bytes.AddRange(_stringEncoder.GetBytes(Payload));
 
             return bytes.ToArray();
         }

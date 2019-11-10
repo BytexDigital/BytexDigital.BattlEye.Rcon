@@ -10,9 +10,11 @@ namespace BytexDigital.BattlEye.Rcon {
     public class NetworkMessageHandler {
         private List<NetworkRequest> _networkRequests;
         private NetworkConnection _networkConnection;
+        private readonly StringEncoder _stringEncoder;
 
         public NetworkMessageHandler(NetworkConnection networkConnection) {
             _networkRequests = new List<NetworkRequest>();
+            _stringEncoder = new StringEncoder();
             _networkConnection = networkConnection;
         }
 
@@ -63,7 +65,7 @@ namespace BytexDigital.BattlEye.Rcon {
         private void HandleMessagePacket(IEnumerable<byte> data) {
             byte sequenceNumber = data.First();
             var payload = data.Skip(1);
-            string content = Encoding.ASCII.GetString(payload.ToArray());
+            string content = _stringEncoder.GetString(payload.ToArray());
 
             _networkConnection.Send(new AcknowledgeRequest(sequenceNumber));
 
@@ -127,7 +129,7 @@ namespace BytexDigital.BattlEye.Rcon {
                     var currentIndex = data.Skip(3).First();
                     var partData = data.Skip(4);
 
-                    string result = Encoding.ASCII.GetString(partData.ToArray());
+                    string result = _stringEncoder.GetString(partData.ToArray());
                     (request.Response as CommandNetworkResponse).AppendContent(result);
 
                     if (expectedAmount == currentIndex + 1) { // End of multi-part message
@@ -137,7 +139,7 @@ namespace BytexDigital.BattlEye.Rcon {
                 } else {
                     RemoveRequest(request);
 
-                    string result = Encoding.ASCII.GetString(data.Skip(1).ToArray());
+                    string result = _stringEncoder.GetString(data.Skip(1).ToArray());
 
                     request.SetResponse(new CommandNetworkResponse(result));
                     request.MarkResponseReceived();

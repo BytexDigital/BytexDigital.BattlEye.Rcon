@@ -1,5 +1,5 @@
 ![Nuget](https://img.shields.io/nuget/v/BytexDigital.BattlEye.Rcon.svg?style=flat-square)
-![StableVersion](https://img.shields.io/badge/stable_version-v1.0.1-green.svg?style=flat-square)
+![StableVersion](https://img.shields.io/badge/stable_version-v1.0.2-green.svg?style=flat-square)
 
 # BytexDigital.BattlEye.Rcon
 This library provides an easy way of communicating with a BattlEye RCON server.
@@ -7,7 +7,7 @@ This library provides an easy way of communicating with a BattlEye RCON server.
 ## Installation
 [nuget package](https://www.nuget.org/packages/BytexDigital.BattlEye.Rcon/)
 ```
-Install-Package BytexDigital.BattlEye.Rcon -Version 1.0.1
+Install-Package BytexDigital.BattlEye.Rcon -Version 1.0.2
 ```
 
 

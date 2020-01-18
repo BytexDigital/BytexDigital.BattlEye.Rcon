@@ -60,20 +60,28 @@ namespace BytexDigital.BattlEye.Rcon {
         internal void FireProtocolEvent(GenericParsedEventArgs args) => ProtocolEvent?.Invoke(this, args);
 
         private async void Receive() {
-            var closeTask = Task.Delay(-1, _cancellationToken);
+            try
+            {
+                var closeTask = Task.Delay(-1, _cancellationToken);
 
-            while (!_cancellationToken.IsCancellationRequested) {
-                var receiveTask = _udpClient.ReceiveAsync();
-                var task = await Task.WhenAny(receiveTask, closeTask).ConfigureAwait(false);
+                while (!_cancellationToken.IsCancellationRequested)
+                {
+                    var receiveTask = _udpClient.ReceiveAsync();
+                    var task = await Task.WhenAny(receiveTask, closeTask).ConfigureAwait(false);
 
-                if (task == closeTask) {
-                    break;
+                    if (task == closeTask)
+                    {
+                        break;
+                    }
+
+                    if (!receiveTask.IsFaulted)
+                    {
+                        var result = receiveTask.Result;
+                        try { _handler.Handle(result.Buffer); } catch { }
+                    }
                 }
+            } catch (SocketException) {
 
-                if (!receiveTask.IsFaulted) {
-                    var result = receiveTask.Result;
-                    try { _handler.Handle(result.Buffer); } catch { }
-                }
             }
         }
 

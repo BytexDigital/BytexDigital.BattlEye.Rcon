@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BytexDigital.BattlEye.Rcon.Requests {
-    public class LoginNetworkRequest : NetworkRequest {
+namespace BytexDigital.BattlEye.Rcon.Requests
+{
+    public class LoginNetworkRequest : NetworkRequest
+    {
         public string Password { get; private set; }
 
         private readonly StringEncoder _stringEncoder = new StringEncoder();
 
-        public LoginNetworkRequest(string password) {
+        public LoginNetworkRequest(string password)
+        {
             Password = password;
         }
 
-        internal override byte[] GetPayloadBytes() {
+        internal override byte[] GetPayloadBytes()
+        {
             var bytes = new List<byte>();
 
             bytes.Add(0x00);

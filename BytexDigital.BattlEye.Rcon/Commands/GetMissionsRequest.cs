@@ -30,7 +30,7 @@ namespace BytexDigital.BattlEye.Rcon.Commands
             {
                 try
                 {
-                    missions.Add(new Mission(match.Groups[1].Value, match.Groups[2].Value));   
+                    missions.Add(new Mission(match.Groups[1].Value, match.Groups[2].Value));
                 }
                 catch { }
             }

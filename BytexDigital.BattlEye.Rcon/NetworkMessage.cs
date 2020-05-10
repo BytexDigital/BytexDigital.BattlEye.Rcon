@@ -4,14 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BytexDigital.BattlEye.Rcon {
-    public abstract class NetworkMessage {
+namespace BytexDigital.BattlEye.Rcon
+{
+    public abstract class NetworkMessage
+    {
         public bool Sent { get; private set; }
         public DateTime? SentTimeUtc { get; private set; }
 
         internal abstract byte[] GetPayloadBytes();
 
-        internal byte[] ToBytes() {
+        internal byte[] ToBytes()
+        {
             var crc32 = new Crc32();
 
             var payload = GetPayloadBytes();
@@ -32,7 +35,8 @@ namespace BytexDigital.BattlEye.Rcon {
             return bytes.ToArray();
         }
 
-        internal void MarkSent() {
+        internal void MarkSent()
+        {
             Sent = true;
             SentTimeUtc = DateTime.UtcNow;
         }

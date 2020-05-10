@@ -1,10 +1,13 @@
 ﻿using System;
 
-namespace BytexDigital.BattlEye.Rcon.Events {
-    public class GenericParsedEventArgs : EventArgs {
+namespace BytexDigital.BattlEye.Rcon.Events
+{
+    public class GenericParsedEventArgs : EventArgs
+    {
         public object Arguments { get; private set; }
 
-        public GenericParsedEventArgs(EventArgs arguments) {
+        public GenericParsedEventArgs(EventArgs arguments)
+        {
             Arguments = arguments;
         }
     }

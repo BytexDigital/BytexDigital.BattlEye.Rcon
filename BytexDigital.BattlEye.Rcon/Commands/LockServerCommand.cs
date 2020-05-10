@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BytexDigital.BattlEye.Rcon.Commands {
+namespace BytexDigital.BattlEye.Rcon.Commands
+{
     /// <summary>
     /// Requests the server to lock itself so new players can't join.
     /// </summary>
-    public class LockServerCommand : Command {
+    public class LockServerCommand : Command
+    {
         /// <summary>
         /// Requests the server to lock itself so new players can't join.
         /// </summary>
-        public LockServerCommand() : base("#lock") {
+        public LockServerCommand() : base("#lock")
+        {
         }
     }
 }

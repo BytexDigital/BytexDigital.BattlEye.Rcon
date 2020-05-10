@@ -4,8 +4,10 @@ using System.Net;
 using System.Text;
 using System.Threading;
 
-namespace BytexDigital.BattlEye.Rcon.Domain {
-    public class PlayerBan {
+namespace BytexDigital.BattlEye.Rcon.Domain
+{
+    public class PlayerBan
+    {
 
         public int Id { get; private set; }
         public string Guid { get; private set; }
@@ -16,7 +18,8 @@ namespace BytexDigital.BattlEye.Rcon.Domain {
         public bool IsIpBan { get { return Ip != null; } }
         public bool IsGuidBan { get { return !string.IsNullOrEmpty(Guid); } }
 
-        public PlayerBan(int banId, string guid, IPAddress ip, TimeSpan duration, string reason) {
+        public PlayerBan(int banId, string guid, IPAddress ip, TimeSpan duration, string reason)
+        {
             Id = banId;
             Guid = guid;
             Ip = ip;

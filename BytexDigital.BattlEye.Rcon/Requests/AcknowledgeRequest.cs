@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BytexDigital.BattlEye.Rcon.Requests {
-    public class AcknowledgeRequest : NetworkMessage {
+namespace BytexDigital.BattlEye.Rcon.Requests
+{
+    public class AcknowledgeRequest : NetworkMessage
+    {
         public byte SequenceNumber { get; private set; }
 
-        public AcknowledgeRequest(byte sequenceNumber) {
+        public AcknowledgeRequest(byte sequenceNumber)
+        {
             SequenceNumber = sequenceNumber;
         }
 
-        internal override byte[] GetPayloadBytes() {
+        internal override byte[] GetPayloadBytes()
+        {
             var bytes = new List<byte>();
 
             bytes.Add(0x02);

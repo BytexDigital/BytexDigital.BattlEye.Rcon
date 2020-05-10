@@ -5,25 +5,31 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace BytexDigital.BattlEye.Rcon.Commands {
+namespace BytexDigital.BattlEye.Rcon.Commands
+{
     /// <summary>
     /// Requests current playerlist and automatically parses it, exposing the result in <see cref="Players"/>.
     /// </summary>
-    public class GetPlayersRequest : Command, IHandlesResponse, IProvidesResponse<List<Player>> {
+    public class GetPlayersRequest : Command, IHandlesResponse, IProvidesResponse<List<Player>>
+    {
         public List<Player> Players { get; private set; }
 
         /// <summary>
         /// Requests current playerlist and automatically parses it, exposing the result in <see cref="Players"/>.
         /// </summary>
-        public GetPlayersRequest() : base("players") {
+        public GetPlayersRequest() : base("players")
+        {
         }
 
-        public void Handle(string content) {
+        public void Handle(string content)
+        {
             var matches = Regex.Matches(content, @"(\d+) *(\d+\.\d\.\d\.\d):(\d+) *(\d+) *(\S{32})\((\S+)\) (?:(.+) (\(Lobby\))|(.+))");
             var players = new List<Player>();
 
-            foreach (Match match in matches) {
-                try {
+            foreach (Match match in matches)
+            {
+                try
+                {
                     int id = Convert.ToInt32(match.Groups[1].Value);
                     string ip = match.Groups[2].Value;
                     int port = Convert.ToInt32(match.Groups[3].Value);
@@ -40,7 +46,9 @@ namespace BytexDigital.BattlEye.Rcon.Commands {
                         name,
                         isVerified,
                         isInLobby));
-                } catch {
+                }
+                catch
+                {
 
                 }
             }
@@ -48,7 +56,8 @@ namespace BytexDigital.BattlEye.Rcon.Commands {
             Players = players;
         }
 
-        public List<Player> GetResponse() {
+        public List<Player> GetResponse()
+        {
             return Players;
         }
     }

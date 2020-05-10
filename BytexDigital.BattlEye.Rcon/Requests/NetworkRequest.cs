@@ -1,56 +1,111 @@
-﻿using BytexDigital.BattlEye.Rcon.Requests;
+﻿using Nito.AsyncEx;
+
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace BytexDigital.BattlEye.Rcon.Requests {
-    public abstract class NetworkRequest : NetworkMessage {
+namespace BytexDigital.BattlEye.Rcon.Requests
+{
+    public abstract class NetworkRequest : NetworkMessage
+    {
         public NetworkResponse Response { get; protected set; }
         public bool ResponseReceived { get { return _responseReceived.IsSet; } }
         public DateTime? ResponseReceivedTimeUtc { get; protected set; }
         public bool Acknowledged { get { return _acknowledged.IsSet; } }
         public DateTime? AcknowledgedTimeUtc { get; private set; }
 
-        private ManualResetEventSlim _acknowledged = new ManualResetEventSlim(false);
+        private AsyncManualResetEvent _acknowledged = new AsyncManualResetEvent(false);
 
-        private ManualResetEventSlim _responseReceived = new ManualResetEventSlim(false);
+        private AsyncManualResetEvent _responseReceived = new AsyncManualResetEvent(false);
 
-        public bool WaitUntilResponseReceived(int timeout) {
-            return _responseReceived.Wait(timeout);
+        public bool WaitUntilResponseReceived(int timeout)
+        {
+            try
+            {
+                _responseReceived.Wait(new CancellationTokenSource(timeout).Token);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        public void WaitUntilResponseReceived() {
+        public async Task<bool> WaitUntilResponseReceivedAsync(CancellationToken? cancellationToken)
+        {
+            try
+            {
+                await _responseReceived.WaitAsync(cancellationToken ?? CancellationToken.None);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public void WaitUntilResponseReceived()
+        {
             _responseReceived.Wait();
         }
 
-        public void WaitUntilAcknowledged() {
+        public void WaitUntilAcknowledged()
+        {
             _acknowledged.Wait();
         }
 
-        public bool WaitUntilAcknowledged(int timeout) {
-            return _acknowledged.Wait(timeout);
+        public bool WaitUntilAcknowledged(int timeout)
+        {
+            try
+            {
+                _acknowledged.Wait(new CancellationTokenSource(timeout).Token);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
-        internal void MarkAcknowledged() {
+        public async Task<bool> WaitUntilAcknowledgedAsync(CancellationToken? cancellationToken)
+        {
+            try
+            {
+                await _acknowledged.WaitAsync(cancellationToken ?? CancellationToken.None);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal void MarkAcknowledged()
+        {
             AcknowledgedTimeUtc = DateTime.UtcNow;
             _acknowledged.Set();
         }
 
-        internal void SetResponse(NetworkResponse networkResponse) {
+        internal void SetResponse(NetworkResponse networkResponse)
+        {
             Response = networkResponse;
         }
 
-        internal void MarkResponseReceived() {
+        internal void MarkResponseReceived()
+        {
             ProcessResponse(Response);
 
             ResponseReceivedTimeUtc = DateTime.UtcNow;
             _responseReceived.Set();
 
-            if (!Acknowledged) {
+            if (!Acknowledged)
+            {
                 MarkAcknowledged();
             }
         }
 
-        protected virtual void ProcessResponse(NetworkResponse networkResponse) {
+        protected virtual void ProcessResponse(NetworkResponse networkResponse)
+        {
 
         }
     }

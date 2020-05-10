@@ -4,23 +4,28 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BytexDigital.BattlEye.Rcon.Requests {
-    public class CommandNetworkRequest : SequentialNetworkRequest {
+namespace BytexDigital.BattlEye.Rcon.Requests
+{
+    public class CommandNetworkRequest : SequentialNetworkRequest
+    {
         public string Payload { get; private set; }
         public Command Command { get; private set; }
 
         private readonly StringEncoder _stringEncoder = new StringEncoder();
 
-        public CommandNetworkRequest(string payload) {
+        public CommandNetworkRequest(string payload)
+        {
             Payload = payload;
         }
 
-        public CommandNetworkRequest(Command command) {
+        public CommandNetworkRequest(Command command)
+        {
             Payload = command.Content;
             Command = command;
         }
 
-        internal override byte[] GetPayloadBytes() {
+        internal override byte[] GetPayloadBytes()
+        {
             var bytes = new List<byte>();
 
             bytes.Add(0x01);
@@ -30,10 +35,12 @@ namespace BytexDigital.BattlEye.Rcon.Requests {
             return bytes.ToArray();
         }
 
-        protected override void ProcessResponse(NetworkResponse networkResponse) {
+        protected override void ProcessResponse(NetworkResponse networkResponse)
+        {
             var response = networkResponse as CommandNetworkResponse;
-            
-            if (Command != null && Command is IHandlesResponse responseHandler) {
+
+            if (Command != null && Command is IHandlesResponse responseHandler)
+            {
                 responseHandler.Handle(response.Content);
             }
         }

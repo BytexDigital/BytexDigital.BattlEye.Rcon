@@ -1,16 +1,19 @@
 ﻿using BytexDigital.BattlEye.Rcon.Commands;
-using BytexDigital.BattlEye.Rcon.Domain;
 using BytexDigital.BattlEye.Rcon.Events;
 using BytexDigital.BattlEye.Rcon.Requests;
 using BytexDigital.BattlEye.Rcon.Responses;
+
+using Nito.AsyncEx;
+
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BytexDigital.BattlEye.Rcon {
-    public class RconClient {
+namespace BytexDigital.BattlEye.Rcon
+{
+    public class RconClient
+    {
         /// <summary>
         /// Defines the interval after how many milliseconds the <see cref="RconClient"/> is going to reattempt connecting to the rcon server.
         /// </summary>
@@ -62,11 +65,12 @@ namespace BytexDigital.BattlEye.Rcon {
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private CancellationTokenSource _connectionCancelTokenSource;
         private NetworkConnection _networkConnection;
-        private ManualResetEventSlim _connected = new ManualResetEventSlim();
+        private AsyncManualResetEvent _connected = new AsyncManualResetEvent();
 
         public RconClient(string ip, int port, string password) : this(new IPEndPoint(IPAddress.Parse(ip), port), password) { }
 
-        public RconClient(IPEndPoint remoteEndpoint, string password) {
+        public RconClient(IPEndPoint remoteEndpoint, string password)
+        {
             RemoteEndpoint = remoteEndpoint;
             _password = password;
         }
@@ -76,7 +80,8 @@ namespace BytexDigital.BattlEye.Rcon {
         /// </summary>
         /// <param name="command">Command string to send</param>
         /// <returns><see cref="CommandNetworkRequest"/> which will be acknowledged by the rcon server and (if sent by the rcon server) contain the response string.</returns>
-        public CommandNetworkRequest Send(string command) {
+        public CommandNetworkRequest Send(string command)
+        {
             var request = new CommandNetworkRequest(command);
             _networkConnection?.Send(request);
 
@@ -88,7 +93,8 @@ namespace BytexDigital.BattlEye.Rcon {
         /// </summary>
         /// <param name="command">Command to send</param>
         /// <returns><see cref="CommandNetworkRequest"/> which will be acknowledged by the rcon server and (if sent by the rcon server) contain the response string.</returns>
-        public CommandNetworkRequest Send(Command command) {
+        public CommandNetworkRequest Send(Command command)
+        {
             var request = new CommandNetworkRequest(command);
             _networkConnection?.Send(request);
 
@@ -105,37 +111,78 @@ namespace BytexDigital.BattlEye.Rcon {
         /// <param name="timeout">Timeout after which to cancel waiting</param>
         /// <param name="result">Response object</param>
         /// <returns>True if a response was received, false if a timeout occurred.</returns>
-        public bool Fetch<ResponseType>(Command command, int timeout, out ResponseType result) {
-            if (!(command is IProvidesResponse<ResponseType>)) {
+        public bool Fetch<ResponseType>(Command command, int timeout, out ResponseType result)
+        {
+            (bool success, var resultData) = Fetch<ResponseType>(command, new CancellationTokenSource(timeout).Token).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            result = resultData;
+
+            return success;
+        }
+
+        public async Task<(bool, ResponseType)> Fetch<ResponseType>(Command command, CancellationToken? cancellationToken)
+        {
+            if (!(command is IProvidesResponse<ResponseType>))
+            {
                 throw new InvalidOperationException("Given command does not support this operation " +
                     "(Either this command does not provide a response or the response type is different to the given one.");
             }
 
             var request = Send(command);
-            bool success = request.WaitUntilResponseReceived(timeout);
+            bool success = await request.WaitUntilResponseReceivedAsync(cancellationToken ?? CancellationToken.None);
 
-            if (success && request.ResponseReceived) {
-                result = (command as IProvidesResponse<ResponseType>).GetResponse();
-                return true;
+            if (success && request.ResponseReceived)
+            {
+                return (true, (command as IProvidesResponse<ResponseType>).GetResponse());
             }
 
-            result = default(ResponseType);
-            return false;
+            return (false, default);
         }
+
 
         /// <summary>
         /// Blocking call which will wait until the client has successfully connected to the rcon server. Returned value true means connected, false means timeout.
         /// </summary>
         /// <param name="timeout">Milliseconds after which to cancel waiting.</param>
         /// <returns>True if connected, false if timed out.</returns>
-        public bool WaitUntilConnected(int timeout) {
-            return _connected.Wait(timeout);
+        public bool WaitUntilConnected(int timeout)
+        {
+            try
+            {
+                _connected.Wait(new CancellationTokenSource(timeout).Token);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Non-blocking call which will wait until the client has successfully connected to the rcon server. Returned value true means connected, false means timeout.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>True if connected, false if timed out.</returns>
+        public async Task<bool> WaitUntilConnectedAsync(CancellationToken? cancellationToken = null)
+        {
+            try
+            {
+                await _connected.WaitAsync(cancellationToken ?? CancellationToken.None);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Blocking call whcih will wait until the client has successfully connected to the rcon server.
         /// </summary>
-        public void WaitUntilConnected() {
+        public void WaitUntilConnected()
+        {
             _connected.Wait();
         }
 
@@ -143,27 +190,34 @@ namespace BytexDigital.BattlEye.Rcon {
         /// Attempts connecting to the rcon server. If true is returned, the client has connected successfully, otherwise false.
         /// </summary>
         /// <returns>True if success, otherwise false</returns>
-        public bool Connect() {
-            if (IsRunning) {
+        public bool Connect()
+        {
+            if (IsRunning)
+            {
                 return IsConnected;
             }
 
             bool success = AttemptConnect();
 
-            if (!success && ReconnectOnFailure) {
+            if (!success && ReconnectOnFailure)
+            {
                 IsRunning = true;
 
-                Task.Run(async () => {
-                    while (!_cancellationTokenSource.IsCancellationRequested) {
+                Task.Run(async () =>
+                {
+                    while (!_cancellationTokenSource.IsCancellationRequested)
+                    {
                         await Task.Delay(ReconnectInterval);
 
-                        if (_cancellationTokenSource.IsCancellationRequested) {
+                        if (_cancellationTokenSource.IsCancellationRequested)
+                        {
                             break;
                         }
 
                         bool loopSuccess = AttemptConnect();
 
-                        if (loopSuccess) {
+                        if (loopSuccess)
+                        {
                             break;
                         }
                     }
@@ -176,13 +230,15 @@ namespace BytexDigital.BattlEye.Rcon {
         /// <summary>
         /// Disconnects the client from the rcon server and/or cancels any automatic reconnect attempt.
         /// </summary>
-        public void Disconnect() {
+        public void Disconnect()
+        {
             _cancellationTokenSource?.Cancel();
             _connectionCancelTokenSource?.Cancel();
             Disconnected?.Invoke(this, new EventArgs());
         }
 
-        private bool AttemptConnect() {
+        private bool AttemptConnect()
+        {
             _connectionCancelTokenSource = new CancellationTokenSource();
             _networkConnection = new NetworkConnection(RemoteEndpoint, _connectionCancelTokenSource.Token);
             _networkConnection.BeginReceiving();
@@ -195,13 +251,15 @@ namespace BytexDigital.BattlEye.Rcon {
 
             bool received = loginRequest.WaitUntilResponseReceived(3000);
 
-            if (!received) {
+            if (!received)
+            {
                 return false;
             }
 
             var response = loginRequest.Response as LoginNetworkResponse;
 
-            if (response.Success) {
+            if (response.Success)
+            {
                 _networkConnection.BeginHeartbeat();
                 _connected.Set();
 
@@ -212,24 +270,30 @@ namespace BytexDigital.BattlEye.Rcon {
             return response.Success;
         }
 
-        private void OnProtocolEvent(object sender, GenericParsedEventArgs e) {
-            if (e.Arguments is PlayerConnectedArgs playerConnectedArgs) {
+        private void OnProtocolEvent(object sender, GenericParsedEventArgs e)
+        {
+            if (e.Arguments is PlayerConnectedArgs playerConnectedArgs)
+            {
                 PlayerConnected?.Invoke(this, playerConnectedArgs);
             }
 
-            if (e.Arguments is PlayerDisconnectedArgs playerDisconnectedArgs) {
+            if (e.Arguments is PlayerDisconnectedArgs playerDisconnectedArgs)
+            {
                 PlayerDisconnected?.Invoke(this, playerDisconnectedArgs);
             }
 
-            if (e.Arguments is PlayerRemovedArgs playerRemovedArgs) {
+            if (e.Arguments is PlayerRemovedArgs playerRemovedArgs)
+            {
                 PlayerRemoved?.Invoke(this, playerRemovedArgs);
             }
         }
 
         private void OnMessageReceived(object sender, string e) => MessageReceived?.Invoke(sender, e);
 
-        private void OnDisconnected(object sender, EventArgs e) {
-            if (!IsConnected) {
+        private void OnDisconnected(object sender, EventArgs e)
+        {
+            if (!IsConnected)
+            {
                 return;
             }
 
@@ -239,8 +303,10 @@ namespace BytexDigital.BattlEye.Rcon {
             IsConnected = false;
             IsRunning = false;
 
-            if (_connectionCancelTokenSource != null && _connectionCancelTokenSource.IsCancellationRequested) {
-                if (ReconnectOnFailure) {
+            if (_connectionCancelTokenSource != null && _connectionCancelTokenSource.IsCancellationRequested)
+            {
+                if (ReconnectOnFailure)
+                {
                     Connect();
                 }
             }

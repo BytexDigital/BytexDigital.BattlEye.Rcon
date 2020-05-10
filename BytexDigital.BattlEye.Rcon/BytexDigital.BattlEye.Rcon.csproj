@@ -11,7 +11,7 @@
     <PackageLicenseUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
-    <Version>1.0.2-beta.3</Version>
+    <Version>1.0.2</Version>
     <PackageReleaseNotes>- Support for cyrillic aswell as GetMission implementation
 - Async support</PackageReleaseNotes>
   </PropertyGroup>

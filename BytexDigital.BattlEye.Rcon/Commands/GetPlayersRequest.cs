@@ -23,7 +23,7 @@ namespace BytexDigital.BattlEye.Rcon.Commands
 
         public void Handle(string content)
         {
-            var matches = Regex.Matches(content, @"(\d+) *(\d+\.\d\.\d\.\d):(\d+) *(\d+) *(\S{32})\((\S+)\) (?:(.+) (\(Lobby\))|(.+))");
+            var matches = Regex.Matches(content, @"(\d+) *(\d*\.\d*\.\d*\.\d*):(\d*) *(\d+) *(\S{32})\((\S+)\) (?:(.+) (\(Lobby\))|(.+))");
             var players = new List<Player>();
 
             foreach (Match match in matches)
@@ -36,7 +36,7 @@ namespace BytexDigital.BattlEye.Rcon.Commands
                     int ping = Convert.ToInt32(match.Groups[4].Value);
                     string guid = match.Groups[5].Value;
                     bool isVerified = match.Groups[6].Value == "OK";
-                    string name = match.Groups[7].Value;
+                    string name = match.Groups[9].Value;
                     bool isInLobby = match.Groups.Count > 8 && match.Groups[8].Value == "(Lobby)";
 
                     players.Add(new Player(id,

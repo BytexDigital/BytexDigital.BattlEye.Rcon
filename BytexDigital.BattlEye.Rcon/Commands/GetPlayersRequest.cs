@@ -1,4 +1,5 @@
 ﻿using BytexDigital.BattlEye.Rcon.Domain;
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -23,7 +24,8 @@ namespace BytexDigital.BattlEye.Rcon.Commands
 
         public void Handle(string content)
         {
-            var matches = Regex.Matches(content, @"(\d+) *(\d+\.\d\.\d\.\d):(\d+) *(\d+) *(\S{32})\((\S+)\) (?:(.+) (\(Lobby\))|(.+))");
+            // Will not work with user names such as 'Test User (Lobby)' because of how this player list is transmitted. No other alternative found so far.
+            var matches = Regex.Matches(content, @"(\d+) *(\d*\.\d*\.\d*\.\d*):(\d*) *(\d+) *(\S{32})\((\S+)\) (.+?)(?=(?: \(Lobby\)$)|(?:$))( \(Lobby\))?", RegexOptions.Multiline);
             var players = new List<Player>();
 
             foreach (Match match in matches)
@@ -37,7 +39,7 @@ namespace BytexDigital.BattlEye.Rcon.Commands
                     string guid = match.Groups[5].Value;
                     bool isVerified = match.Groups[6].Value == "OK";
                     string name = match.Groups[7].Value;
-                    bool isInLobby = match.Groups.Count > 8 && match.Groups[8].Value == "(Lobby)";
+                    bool isInLobby = match.Groups.Count > 8;
 
                     players.Add(new Player(id,
                         new IPEndPoint(IPAddress.Parse(ip), port),

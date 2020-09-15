@@ -14,6 +14,7 @@
     <Version>1.0.3-beta.1</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>logo_squared_128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,10 @@
 
   <ItemGroup>
     <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="logo_squared_128.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

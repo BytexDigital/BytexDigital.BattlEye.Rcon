@@ -20,16 +20,16 @@ namespace BytexDigital.BattlEye.Rcon.HashAlgorithms
     /// </remarks>
     public sealed class Crc32 : HashAlgorithm
     {
-        public const uint DefaultPolynomial = 0xedb88320u;
-        public const uint DefaultSeed = 0xffffffffu;
+        public const uint DEFAULT_POLYNOMIAL = 0xedb88320u;
+        public const uint DEFAULT_SEED = 0xffffffffu;
 
-        private static uint[] defaultTable;
+        private static uint[] _defaultTable;
 
-        private readonly uint seed;
-        private readonly uint[] table;
-        private uint hash;
+        private readonly uint _seed;
+        private readonly uint[] _table;
+        private uint _hash;
 
-        public Crc32() : this(DefaultPolynomial, DefaultSeed)
+        public Crc32() : this(DEFAULT_POLYNOMIAL, DEFAULT_SEED)
         {
         }
 
@@ -40,23 +40,23 @@ namespace BytexDigital.BattlEye.Rcon.HashAlgorithms
                 throw new PlatformNotSupportedException("Not supported on Big Endian processors");
             }
 
-            table = InitializeTable(polynomial);
-            this.seed = hash = seed;
+            _table = InitializeTable(polynomial);
+            this._seed = _hash = seed;
         }
 
         public override void Initialize()
         {
-            hash = seed;
+            _hash = _seed;
         }
 
         protected override void HashCore(byte[] array, int ibStart, int cbSize)
         {
-            hash = CalculateHash(table, hash, array, ibStart, cbSize);
+            _hash = CalculateHash(_table, _hash, array, ibStart, cbSize);
         }
 
         protected override byte[] HashFinal()
         {
-            var hashBuffer = UInt32ToBigEndianBytes(~hash);
+            var hashBuffer = UInt32ToBigEndianBytes(~_hash);
             HashValue = hashBuffer;
             return hashBuffer;
         }
@@ -65,12 +65,12 @@ namespace BytexDigital.BattlEye.Rcon.HashAlgorithms
 
         public static uint Compute(byte[] buffer)
         {
-            return Compute(DefaultSeed, buffer);
+            return Compute(DEFAULT_SEED, buffer);
         }
 
         public static uint Compute(uint seed, byte[] buffer)
         {
-            return Compute(DefaultPolynomial, seed, buffer);
+            return Compute(DEFAULT_POLYNOMIAL, seed, buffer);
         }
 
         public static uint Compute(uint polynomial, uint seed, byte[] buffer)
@@ -80,9 +80,9 @@ namespace BytexDigital.BattlEye.Rcon.HashAlgorithms
 
         static uint[] InitializeTable(uint polynomial)
         {
-            if (polynomial == DefaultPolynomial && defaultTable != null)
+            if (polynomial == DEFAULT_POLYNOMIAL && _defaultTable != null)
             {
-                return defaultTable;
+                return _defaultTable;
             }
 
             var createTable = new uint[256];
@@ -104,9 +104,9 @@ namespace BytexDigital.BattlEye.Rcon.HashAlgorithms
                 createTable[i] = entry;
             }
 
-            if (polynomial == DefaultPolynomial)
+            if (polynomial == DEFAULT_POLYNOMIAL)
             {
-                defaultTable = createTable;
+                _defaultTable = createTable;
             }
 
             return createTable;

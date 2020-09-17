@@ -39,7 +39,7 @@ namespace BytexDigital.BattlEye.Rcon.Commands
                     string guid = match.Groups[5].Value;
                     bool isVerified = match.Groups[6].Value == "OK";
                     string name = match.Groups[7].Value;
-                    bool isInLobby = match.Groups.Count > 8;
+                    bool isInLobby = match.Groups[8].Success;
 
                     players.Add(new Player(id,
                         new IPEndPoint(IPAddress.Parse(ip), port),

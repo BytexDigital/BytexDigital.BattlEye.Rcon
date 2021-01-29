@@ -11,7 +11,7 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
-    <Version>1.0.4</Version>
+    <Version>1.0.3-beta.3</Version>
     <PackageReleaseNotes>Improved parsing of player lists
 Fixed an issue regarding sequence numbers of outbound packets
 Renamed RconClient.Fetch to FetchAsync</PackageReleaseNotes>

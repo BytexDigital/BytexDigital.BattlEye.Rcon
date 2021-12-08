@@ -111,23 +111,17 @@ namespace BytexDigital.BattlEye.Rcon
         /// <param name="timeout">Timeout after which to cancel waiting</param>
         /// <param name="result">Response object</param>
         /// <returns>True if a response was received, false if a timeout occurred.</returns>
-        public bool Fetch<ResponseType>(Command command, int timeout, out ResponseType result)
+        public bool Fetch<ResponseType, CommandType>(CommandType command, int timeout, out ResponseType result) where CommandType : Command, IProvidesResponse<ResponseType>
         {
-            (bool success, var resultData) = FetchAsync<ResponseType>(command, new CancellationTokenSource(timeout).Token).ConfigureAwait(false).GetAwaiter().GetResult();
+            (bool success, var resultData) = FetchAsync<ResponseType, CommandType>(command, new CancellationTokenSource(timeout).Token).ConfigureAwait(false).GetAwaiter().GetResult();
 
             result = resultData;
 
             return success;
         }
 
-        public async Task<(bool, ResponseType)> FetchAsync<ResponseType>(Command command, CancellationToken? cancellationToken)
+        public async Task<(bool, ResponseType)> FetchAsync<ResponseType, CommandType>(CommandType command, CancellationToken? cancellationToken) where CommandType : Command, IProvidesResponse<ResponseType>
         {
-            if (!(command is IProvidesResponse<ResponseType>))
-            {
-                throw new InvalidOperationException("Given command does not support this operation " +
-                    "(Either this command does not provide a response or the response type is different to the given one).");
-            }
-
             var request = Send(command);
             bool success = await request.WaitUntilResponseReceivedAsync(cancellationToken ?? CancellationToken.None);
 

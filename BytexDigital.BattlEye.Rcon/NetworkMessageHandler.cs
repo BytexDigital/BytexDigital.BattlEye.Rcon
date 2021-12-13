@@ -158,11 +158,17 @@ namespace BytexDigital.BattlEye.Rcon
                     var currentIndex = data.Skip(3).First();
                     var partData = data.Skip(4);
 
-                    string result = _stringEncoder.GetString(partData.ToArray());
-                    (request.Response as CommandNetworkResponse).AppendContent(result);
+                    bool isLastPartOfMessage = expectedAmount == currentIndex + 1;
 
-                    if (expectedAmount == currentIndex + 1)
-                    { // End of multi-part message
+                    //string result = _stringEncoder.GetString(partData.ToArray());
+                    (request.Response as CommandNetworkResponse).AppendContentBytes(partData.ToArray());
+
+                    if (isLastPartOfMessage) // End of multi-part message
+                    {
+                        // Convert the collected bytes into a string
+                        (request.Response as CommandNetworkResponse).ConvertCollectedBytesToContentString(bytes => _stringEncoder.GetString(bytes.ToArray()));
+
+                        // Cleanup and fire off
                         RemoveRequest(request);
                         request.MarkResponseReceived();
                     }

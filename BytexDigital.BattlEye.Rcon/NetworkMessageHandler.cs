@@ -89,9 +89,9 @@ namespace BytexDigital.BattlEye.Rcon
 
             try { _networkConnection.FireMessageReceived(content); } catch { }
 
-            string playerConnectedPattern = @"Verified GUID \((\S{32})\) of player #(\d+) (.+)";
-            string playerDisconnectedPattern = @"Player #(\d+) (.+) disconnected";
-            string playerRemovedPattern = @"Player #(\d+) (.+) \((\S{32})\) has been kicked by BattlEye: Admin (Kick|Ban)(?: \((.+)\))?";
+            const string playerConnectedPattern = @"Verified GUID \((\S{32})\) of player #(\d+) (.+)";
+            const string playerDisconnectedPattern = @"Player #(\d+) (.+) disconnected";
+            const string playerRemovedPattern = @"Player #(\d+) (.+) \((\S{32})\) has been kicked by BattlEye: Admin (Kick|Ban)(?: \((.+)\))?";
 
             if (Regex.IsMatch(content, playerConnectedPattern))
             {

@@ -1,5 +1,6 @@
 ﻿using BytexDigital.BattlEye.Rcon.Requests;
 using BytexDigital.BattlEye.Rcon.Responses;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,11 +142,14 @@ namespace BytexDigital.BattlEye.Rcon
                 return;
             }
 
-            var remainingBytes = data.Skip(1);
+            // Payload is either a list of bytes or empty.
+            // If the payload is empty, it is the acknowledgement packet of a command we sent.
+            // If the payload is not empty, its a response and implicitly also an acknowledgement packet.
+            var payload = data.Skip(1);
 
-            if (remainingBytes.Count() > 0)
+            if (payload.Count() > 0)
             {
-                var header = remainingBytes.First();
+                var header = payload.First();
 
                 if (header == 0x00)
                 { // Multi-part message
@@ -183,10 +187,17 @@ namespace BytexDigital.BattlEye.Rcon
                     request.MarkResponseReceived();
                 }
             }
-
-            if (!request.Acknowledged)
+            else
             {
-                request.MarkAcknowledged();
+                // We received a packet without any further payload, mark the origin message as acknowledged locally if we haven't already (actually, this should only ever happen once!)
+                if (!request.Acknowledged)
+                {
+                    request.MarkAcknowledged();
+                }
+
+                // Important! Remove the request from our local bag of requests that are awaiting some kind of response (or acknowledgement).
+                // This is important so that we never get requests with duplicate sequence numbers in our local storage. Duplicate sequence numbers must not exist!
+                RemoveRequest(request);
             }
         }
 

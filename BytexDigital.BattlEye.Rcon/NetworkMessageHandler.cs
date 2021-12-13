@@ -1,5 +1,6 @@
 ﻿using BytexDigital.BattlEye.Rcon.Requests;
 using BytexDigital.BattlEye.Rcon.Responses;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,9 +90,9 @@ namespace BytexDigital.BattlEye.Rcon
 
             try { _networkConnection.FireMessageReceived(content); } catch { }
 
-            string playerConnectedPattern = @"Verified GUID \((\S{32})\) of player #(\d+) (.+)";
-            string playerDisconnectedPattern = @"Player #(\d+) (.+) disconnected";
-            string playerRemovedPattern = @"Player #(\d+) (.+) \((\S{32})\) has been kicked by BattlEye: Admin (Kick|Ban)(?: \((.+)\))?";
+            const string playerConnectedPattern = @"Verified GUID \((\S{32})\) of player #(\d+) (.+)";
+            const string playerDisconnectedPattern = @"Player #(\d+) (.+) disconnected";
+            const string playerRemovedPattern = @"Player #(\d+) (.+) \((\S{32})\) has been kicked by BattlEye: Admin (Kick|Ban)(?: \((.+)\))?";
 
             if (Regex.IsMatch(content, playerConnectedPattern))
             {
@@ -141,11 +142,14 @@ namespace BytexDigital.BattlEye.Rcon
                 return;
             }
 
-            var remainingBytes = data.Skip(1);
+            // Payload is either a list of bytes or empty.
+            // If the payload is empty, it is the acknowledgement packet of a command we sent.
+            // If the payload is not empty, its a response and implicitly also an acknowledgement packet.
+            var payload = data.Skip(1);
 
-            if (remainingBytes.Count() > 0)
+            if (payload.Count() > 0)
             {
-                var header = remainingBytes.First();
+                var header = payload.First();
 
                 if (header == 0x00)
                 { // Multi-part message
@@ -158,11 +162,17 @@ namespace BytexDigital.BattlEye.Rcon
                     var currentIndex = data.Skip(3).First();
                     var partData = data.Skip(4);
 
-                    string result = _stringEncoder.GetString(partData.ToArray());
-                    (request.Response as CommandNetworkResponse).AppendContent(result);
+                    bool isLastPartOfMessage = expectedAmount == currentIndex + 1;
 
-                    if (expectedAmount == currentIndex + 1)
-                    { // End of multi-part message
+                    //string result = _stringEncoder.GetString(partData.ToArray());
+                    (request.Response as CommandNetworkResponse).AppendContentBytes(partData.ToArray());
+
+                    if (isLastPartOfMessage) // End of multi-part message
+                    {
+                        // Convert the collected bytes into a string
+                        (request.Response as CommandNetworkResponse).ConvertCollectedBytesToContentString(bytes => _stringEncoder.GetString(bytes.ToArray()));
+
+                        // Cleanup and fire off
                         RemoveRequest(request);
                         request.MarkResponseReceived();
                     }
@@ -177,10 +187,17 @@ namespace BytexDigital.BattlEye.Rcon
                     request.MarkResponseReceived();
                 }
             }
-
-            if (!request.Acknowledged)
+            else
             {
-                request.MarkAcknowledged();
+                // We received a packet without any further payload, mark the origin message as acknowledged locally if we haven't already (actually, this should only ever happen once!)
+                if (!request.Acknowledged)
+                {
+                    request.MarkAcknowledged();
+                }
+
+                // Important! Remove the request from our local bag of requests that are awaiting some kind of response (or acknowledgement).
+                // This is important so that we never get requests with duplicate sequence numbers in our local storage. Duplicate sequence numbers must not exist!
+                RemoveRequest(request);
             }
         }
 

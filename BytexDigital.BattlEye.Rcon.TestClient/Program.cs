@@ -11,7 +11,7 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
     {
         static void Main(string[] args)
         {
-            RconClient networkClient = new RconClient("127.0.0.1", 2310, "test");
+            RconClient networkClient = new RconClient("127.0.0.1", 2310, "local");
             networkClient.Connected += NetworkClient_Connected;
             networkClient.Disconnected += NetworkClient_Disconnected;
             networkClient.MessageReceived += NetworkClient_MessageReceived;
@@ -30,6 +30,10 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
             {
                 Console.WriteLine($"Players online: {onlinePlayers.Count}");
             }
+
+            var bansFetchSuccess = networkClient.Fetch(new GetBansRequest(), 5000, out List<PlayerBan> bans);
+
+            if (bansFetchSuccess) Console.WriteLine($"{bans.Count} bans");
 
             networkClient.Send(new SendMessageCommand("This is a global message"));
 

@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 
 namespace BytexDigital.BattlEye.Rcon.Domain
 {
     public class Player
     {
-        public int Id { get; private set; }
-        public IPEndPoint RemoteEndpoint { get; private set; }
-        public int Ping { get; private set; }
-        public string Guid { get; private set; }
-        public string Name { get; private set; }
-        public bool IsVerified { get; private set; }
-        public bool IsInLobby { get; private set; }
+        public int Id { get; }
+        public IPEndPoint RemoteEndpoint { get; }
+        public int Ping { get; }
+        public string Guid { get; }
+        public string Name { get; }
+        public bool IsVerified { get; }
+        public bool IsInLobby { get; }
 
-        public Player(int id, IPEndPoint remoteEndpoint, int ping, string guid, string name, bool isVerified, bool isInLobby)
+        public Player(
+            int id,
+            IPEndPoint remoteEndpoint,
+            int ping,
+            string guid,
+            string name,
+            bool isVerified,
+            bool isInLobby)
         {
             Id = id;
             RemoteEndpoint = remoteEndpoint;

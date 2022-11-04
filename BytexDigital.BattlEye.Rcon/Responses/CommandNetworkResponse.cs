@@ -5,9 +5,8 @@ namespace BytexDigital.BattlEye.Rcon.Responses
 {
     public class CommandNetworkResponse : NetworkResponse
     {
-        public string Content { get; private set; }
-
         private readonly List<byte> _data = new List<byte>();
+        public string Content { get; private set; }
 
         public CommandNetworkResponse(string content)
         {

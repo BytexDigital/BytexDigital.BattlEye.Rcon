@@ -1,22 +1,20 @@
-﻿using Nito.AsyncEx;
-
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nito.AsyncEx;
 
 namespace BytexDigital.BattlEye.Rcon.Requests
 {
     public abstract class NetworkRequest : NetworkMessage
     {
+        private readonly AsyncManualResetEvent _acknowledged = new AsyncManualResetEvent(false);
+
+        private readonly AsyncManualResetEvent _responseReceived = new AsyncManualResetEvent(false);
         public NetworkResponse Response { get; protected set; }
-        public bool ResponseReceived { get { return _responseReceived.IsSet; } }
+        public bool ResponseReceived => _responseReceived.IsSet;
         public DateTime? ResponseReceivedTimeUtc { get; protected set; }
-        public bool Acknowledged { get { return _acknowledged.IsSet; } }
+        public bool Acknowledged => _acknowledged.IsSet;
         public DateTime? AcknowledgedTimeUtc { get; private set; }
-
-        private AsyncManualResetEvent _acknowledged = new AsyncManualResetEvent(false);
-
-        private AsyncManualResetEvent _responseReceived = new AsyncManualResetEvent(false);
 
         public bool WaitUntilResponseReceived(int timeout)
         {
@@ -31,11 +29,11 @@ namespace BytexDigital.BattlEye.Rcon.Requests
             }
         }
 
-        public async Task<bool> WaitUntilResponseReceivedAsync(CancellationToken? cancellationToken)
+        public async Task<bool> WaitUntilResponseReceivedAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                await _responseReceived.WaitAsync(cancellationToken ?? CancellationToken.None);
+                await _responseReceived.WaitAsync(cancellationToken);
                 return true;
             }
             catch
@@ -67,11 +65,11 @@ namespace BytexDigital.BattlEye.Rcon.Requests
             }
         }
 
-        public async Task<bool> WaitUntilAcknowledgedAsync(CancellationToken? cancellationToken)
+        public async Task<bool> WaitUntilAcknowledgedAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                await _acknowledged.WaitAsync(cancellationToken ?? CancellationToken.None);
+                await _acknowledged.WaitAsync(cancellationToken);
                 return true;
             }
             catch
@@ -98,15 +96,11 @@ namespace BytexDigital.BattlEye.Rcon.Requests
             ResponseReceivedTimeUtc = DateTime.UtcNow;
             _responseReceived.Set();
 
-            if (!Acknowledged)
-            {
-                MarkAcknowledged();
-            }
+            if (!Acknowledged) MarkAcknowledged();
         }
 
         protected virtual void ProcessResponse(NetworkResponse networkResponse)
         {
-
         }
     }
 }

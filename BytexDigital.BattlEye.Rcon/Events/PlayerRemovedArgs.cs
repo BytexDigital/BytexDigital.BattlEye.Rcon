@@ -4,11 +4,11 @@ namespace BytexDigital.BattlEye.Rcon.Events
 {
     public class PlayerRemovedArgs : EventArgs
     {
-        public int Id { get; private set; }
-        public string Guid { get; private set; }
-        public string Name { get; private set; }
-        public bool IsBan { get; private set; }
-        public string Reason { get; private set; }
+        public int Id { get; }
+        public string Guid { get; }
+        public string Name { get; }
+        public bool IsBan { get; }
+        public string Reason { get; }
 
         public PlayerRemovedArgs(int id, string guid, string name, bool isBan, string reason)
         {

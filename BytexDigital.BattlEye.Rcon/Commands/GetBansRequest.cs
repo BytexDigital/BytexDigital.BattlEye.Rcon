@@ -1,22 +1,23 @@
-﻿using BytexDigital.BattlEye.Rcon.Domain;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using BytexDigital.BattlEye.Rcon.Domain;
 
 namespace BytexDigital.BattlEye.Rcon.Commands
 {
     /// <summary>
-    /// Requests current list of banned players and automatically parses it, exposing the result in <see cref="BannedPlayers"/>.
+    ///     Requests current list of banned players and automatically parses it, exposing the result in
+    ///     <see cref="BannedPlayers" />.
     /// </summary>
     public class GetBansRequest : Command, IHandlesResponse, IProvidesResponse<List<PlayerBan>>
     {
         public List<PlayerBan> BannedPlayers { get; private set; }
 
         /// <summary>
-        /// Requests current list of banned players and automatically parses it, exposing the result in <see cref="BannedPlayers"/>.
+        ///     Requests current list of banned players and automatically parses it, exposing the result in
+        ///     <see cref="BannedPlayers" />.
         /// </summary>
         public GetBansRequest() : base("bans")
         {
@@ -36,16 +37,18 @@ namespace BytexDigital.BattlEye.Rcon.Commands
                     var duration = match.Groups[3].Value;
                     var reason = match.Groups.Count > 4 ? match.Groups[4].Value : "";
 
-                    bannedPlayers.Add(new PlayerBan(
-                        id,
-                        guid,
-                        null,
-                        duration == "perm" ? Timeout.InfiniteTimeSpan : TimeSpan.FromSeconds(Convert.ToInt32(duration)),
-                        reason));
+                    bannedPlayers.Add(
+                        new PlayerBan(
+                            id,
+                            guid,
+                            null,
+                            duration == "perm"
+                                ? Timeout.InfiniteTimeSpan
+                                : TimeSpan.FromSeconds(Convert.ToInt32(duration)),
+                            reason));
                 }
                 catch
                 {
-
                 }
             }
 
@@ -60,16 +63,18 @@ namespace BytexDigital.BattlEye.Rcon.Commands
                     var duration = match.Groups[3].Value;
                     var reason = match.Groups.Count > 4 ? match.Groups[4].Value : "";
 
-                    bannedPlayers.Add(new PlayerBan(
-                        id,
-                        null,
-                        IPAddress.Parse(ip),
-                        duration == "perm" ? Timeout.InfiniteTimeSpan : TimeSpan.FromSeconds(Convert.ToInt32(duration)),
-                        reason));
+                    bannedPlayers.Add(
+                        new PlayerBan(
+                            id,
+                            null,
+                            IPAddress.Parse(ip),
+                            duration == "perm"
+                                ? Timeout.InfiniteTimeSpan
+                                : TimeSpan.FromSeconds(Convert.ToInt32(duration)),
+                            reason));
                 }
                 catch
                 {
-
                 }
             }
 

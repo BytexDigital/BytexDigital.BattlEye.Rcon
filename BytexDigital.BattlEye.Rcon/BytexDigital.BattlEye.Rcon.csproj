@@ -2,16 +2,21 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Ryan Torzynski</Authors>
         <Company>Bytex Digital UG (haftungsbeschränkt)</Company>
         <RepositoryUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</PackageProjectUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <RepositoryUrl>.git</RepositoryUrl>
         <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
-        <Version>1.0.3-beta.6</Version>
+
+        <VersionSuffix>$(VersionSuffix)</VersionSuffix>
+        
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.3</PackageVersion>
+        <PackageVersion Condition=" '$(VersionSuffix)' != '' ">$(PackageVersion)-$(VersionSuffix)</PackageVersion>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
         <PackageIcon>logo_squared_128.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,17 +1,14 @@
-﻿using BytexDigital.BattlEye.Rcon.Commands;
+﻿using System.Collections.Generic;
+using BytexDigital.BattlEye.Rcon.Commands;
 using BytexDigital.BattlEye.Rcon.Responses;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BytexDigital.BattlEye.Rcon.Requests
 {
     public class CommandNetworkRequest : SequentialNetworkRequest
     {
-        public string Payload { get; private set; }
-        public Command Command { get; private set; }
-
         private readonly StringEncoder _stringEncoder = new StringEncoder();
+        public string Payload { get; }
+        public Command Command { get; }
 
         public CommandNetworkRequest(string payload)
         {
@@ -40,9 +37,7 @@ namespace BytexDigital.BattlEye.Rcon.Requests
             var response = networkResponse as CommandNetworkResponse;
 
             if (Command != null && Command is IHandlesResponse responseHandler)
-            {
                 responseHandler.Handle(response.Content);
-            }
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BytexDigital.BattlEye.Rcon.Requests
 {
     public class AcknowledgeRequest : NetworkMessage
     {
-        public byte SequenceNumber { get; private set; }
+        public byte SequenceNumber { get; }
 
         public AcknowledgeRequest(byte sequenceNumber)
         {

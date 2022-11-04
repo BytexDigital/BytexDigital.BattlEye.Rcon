@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BytexDigital.BattlEye.Rcon.Responses
+﻿namespace BytexDigital.BattlEye.Rcon.Responses
 {
     public class LoginNetworkResponse : NetworkResponse
     {
-        public bool Success { get; private set; }
+        public bool Success { get; }
 
         public LoginNetworkResponse(bool success)
         {

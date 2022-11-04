@@ -1,37 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Ryan Torzynski</Authors>
-    <Company>Bytex Digital UG (haftungsbeschränkt)</Company>
-    <RepositoryUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
-    <PackageLicenseUrl></PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
-    <Version>1.0.3-beta.5</Version>
-    <PackageReleaseNotes>Improved parsing of player lists
-Fixed an issue regarding sequence numbers of outbound packets
-Renamed RconClient.Fetch to FetchAsync</PackageReleaseNotes>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageIcon>logo_squared_128.png</PackageIcon>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Ryan Torzynski</Authors>
+        <Company>Bytex Digital UG (haftungsbeschränkt)</Company>
+        <RepositoryUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/BytexDigital/BytexDigital.BattlEye.Rcon</PackageProjectUrl>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+        <Description>This library provides an easy way of communicating with a BattlEye RCON server.</Description>
+        <Version>1.0.3-beta.6</Version>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PackageIcon>logo_squared_128.png</PackageIcon>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Nito.AsyncEx" Version="5.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Nito.AsyncEx" Version="5.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\LICENSE.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="logo_squared_128.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="..\LICENSE.md">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+        <None Include="logo_squared_128.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
 
 </Project>

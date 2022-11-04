@@ -6,7 +6,14 @@ namespace BytexDigital.BattlEye.Rcon
     {
         private readonly Encoding _encoding = Encoding.UTF8;
 
-        public byte[] GetBytes(string message) => _encoding.GetBytes(message);
-        public string GetString(byte[] bytes) => _encoding.GetString(bytes);
+        public byte[] GetBytes(string message)
+        {
+            return _encoding.GetBytes(message);
+        }
+
+        public string GetString(byte[] bytes)
+        {
+            return _encoding.GetString(bytes);
+        }
     }
 }

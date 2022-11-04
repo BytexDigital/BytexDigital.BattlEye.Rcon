@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BytexDigital.BattlEye.Rcon.Requests
 {
     public class LoginNetworkRequest : NetworkRequest
     {
-        public string Password { get; private set; }
-
         private readonly StringEncoder _stringEncoder = new StringEncoder();
+        public string Password { get; }
 
         public LoginNetworkRequest(string password)
         {

@@ -1,17 +1,16 @@
-﻿using BytexDigital.BattlEye.Rcon.Commands;
-using BytexDigital.BattlEye.Rcon.Domain;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using BytexDigital.BattlEye.Rcon.Commands;
+using BytexDigital.BattlEye.Rcon.Domain;
+using BytexDigital.BattlEye.Rcon.Events;
 
 namespace BytexDigital.BattlEye.Rcon.TestClient
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            RconClient networkClient = new RconClient("127.0.0.1", 2310, "local");
+            var networkClient = new RconClient("127.0.0.1", 2310, "local");
             networkClient.Connected += NetworkClient_Connected;
             networkClient.Disconnected += NetworkClient_Disconnected;
             networkClient.MessageReceived += NetworkClient_MessageReceived;
@@ -21,15 +20,12 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
             networkClient.Connect();
             networkClient.WaitUntilConnected();
 
-            bool requestSuccess = networkClient.Fetch(
-                command: new GetPlayersRequest(),
-                timeout: 5000,
-                result: out List<Player> onlinePlayers);
+            var requestSuccess = networkClient.Fetch(
+                new GetPlayersRequest(),
+                5000,
+                out List<Player> onlinePlayers);
 
-            if (requestSuccess)
-            {
-                Console.WriteLine($"Players online: {onlinePlayers.Count}");
-            }
+            if (requestSuccess) Console.WriteLine($"Players online: {onlinePlayers.Count}");
 
             var bansFetchSuccess = networkClient.Fetch(new GetBansRequest(), 5000, out List<PlayerBan> bans);
 
@@ -40,17 +36,18 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
             Console.ReadLine();
         }
 
-        private static void NetworkClient_PlayerRemoved(object sender, Events.PlayerRemovedArgs e)
+        private static void NetworkClient_PlayerRemoved(object sender, PlayerRemovedArgs e)
         {
-            Console.WriteLine($"Player {e.Name} ({e.Id}) with guid {e.Guid} was removed ({(e.IsBan ? "Ban" : "Kick")}) with reason: {e.Reason}");
+            Console.WriteLine(
+                $"Player {e.Name} ({e.Id}) with guid {e.Guid} was removed ({(e.IsBan ? "Ban" : "Kick")}) with reason: {e.Reason}");
         }
 
-        private static void NetworkClient_PlayerDisconnected(object sender, Events.PlayerDisconnectedArgs e)
+        private static void NetworkClient_PlayerDisconnected(object sender, PlayerDisconnectedArgs e)
         {
             Console.WriteLine($"Player {e.Name} ({e.Id}) disconnted");
         }
 
-        private static void NetworkClient_PlayerConnected(object sender, Events.PlayerConnectedArgs e)
+        private static void NetworkClient_PlayerConnected(object sender, PlayerConnectedArgs e)
         {
             Console.WriteLine($"Player {e.Name} ({e.Id}) joined with guid {e.Guid}");
         }

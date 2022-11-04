@@ -294,6 +294,8 @@ namespace BytexDigital.BattlEye.Rcon
             }
 
             _connectionCancelTokenSource.Cancel();
+            
+            _networkConnection.Dispose();
             _networkConnection = null;
 
             return false;
@@ -328,7 +330,10 @@ namespace BytexDigital.BattlEye.Rcon
 
             _connected.Reset();
             _connectionCancelTokenSource?.Cancel();
-
+            
+            _networkConnection.Dispose();
+            _networkConnection = null;
+            
             IsConnected = false;
             IsRunning = false;
 

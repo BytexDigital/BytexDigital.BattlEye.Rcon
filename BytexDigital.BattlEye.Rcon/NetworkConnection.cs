@@ -8,7 +8,7 @@ using BytexDigital.BattlEye.Rcon.Requests;
 
 namespace BytexDigital.BattlEye.Rcon
 {
-    public class NetworkConnection
+    public class NetworkConnection : IDisposable
     {
         private readonly NetworkMessageHandler _handler;
         private readonly IPEndPoint _remoteEndpoint;
@@ -96,6 +96,15 @@ namespace BytexDigital.BattlEye.Rcon
             }
             catch (SocketException)
             {
+                try
+                {
+                    // Free receiving port
+                    _udpClient.Close();
+                }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
@@ -122,6 +131,27 @@ namespace BytexDigital.BattlEye.Rcon
                 {
                     // ignored
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                _udpClient?.Close();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            try
+            {
+                _udpClient?.Dispose();
+            }
+            catch
+            {
+                // ignored
             }
         }
     }

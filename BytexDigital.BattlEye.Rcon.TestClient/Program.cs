@@ -17,6 +17,7 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
             networkClient.PlayerConnected += NetworkClient_PlayerConnected;
             networkClient.PlayerDisconnected += NetworkClient_PlayerDisconnected;
             networkClient.PlayerRemoved += NetworkClient_PlayerRemoved;
+            
             networkClient.Connect();
             networkClient.WaitUntilConnected();
 
@@ -32,6 +33,10 @@ namespace BytexDigital.BattlEye.Rcon.TestClient
             if (bansFetchSuccess) Console.WriteLine($"{bans.Count} bans");
 
             networkClient.Send(new SendMessageCommand("This is a global message"));
+
+            Console.ReadLine();
+            
+            networkClient.Disconnect();
 
             Console.ReadLine();
         }

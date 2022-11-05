@@ -14,13 +14,13 @@ namespace BytexDigital.BattlEye.Rcon
         private readonly IPEndPoint _remoteEndpoint;
         private readonly SequenceCounter _sequenceCounter;
         private readonly UdpClient _udpClient;
-        private CancellationToken _cancellationToken;
+        private CancellationTokenSource _cancellationTokenSource;
         private DateTime _lastSent;
 
         public NetworkConnection(IPEndPoint remoteEndpoint, CancellationToken cancellationToken)
         {
             _remoteEndpoint = remoteEndpoint;
-            _cancellationToken = cancellationToken;
+            _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             _udpClient = new UdpClient(remoteEndpoint.AddressFamily);
             _udpClient.Connect(_remoteEndpoint);
             _handler = new NetworkMessageHandler(this);
@@ -33,12 +33,12 @@ namespace BytexDigital.BattlEye.Rcon
 
         public void BeginReceiving()
         {
-            _ = Task.Run(Receive, _cancellationToken);
+            _ = Task.Run(Receive, _cancellationTokenSource.Token);
         }
 
         public void BeginHeartbeat()
         {
-            _ = Task.Run(Heartbeat, _cancellationToken);
+            _ = Task.Run(Heartbeat, _cancellationTokenSource.Token);
         }
 
         public void Send(NetworkMessage networkMessage)
@@ -72,9 +72,9 @@ namespace BytexDigital.BattlEye.Rcon
         {
             try
             {
-                var closeTask = Task.Delay(-1, _cancellationToken);
+                var closeTask = Task.Delay(-1, _cancellationTokenSource.Token);
 
-                while (!_cancellationToken.IsCancellationRequested)
+                while (!_cancellationTokenSource.IsCancellationRequested)
                 {
                     var receiveTask = _udpClient.ReceiveAsync();
                     var task = await Task.WhenAny(receiveTask, closeTask).ConfigureAwait(false);
@@ -94,48 +94,49 @@ namespace BytexDigital.BattlEye.Rcon
                     }
                 }
             }
-            catch (SocketException)
+            catch
             {
-                try
-                {
-                    // Free receiving port
-                    _udpClient.Close();
-                }
-                catch
-                {
-                    // ignored
-                }
+                // ignored
             }
         }
 
         private async void Heartbeat()
         {
-            while (!_cancellationToken.IsCancellationRequested)
+            try
             {
-                await Task.Delay(3000, _cancellationToken);
-
-                if (_cancellationToken.IsCancellationRequested) return;
-
-                var keepAlivePacket = new CommandNetworkRequest("");
-
-                Send(keepAlivePacket);
-                keepAlivePacket.WaitUntilAcknowledged(5000);
-
-                if (keepAlivePacket.Acknowledged) continue;
-
-                try
+                while (!_cancellationTokenSource.IsCancellationRequested)
                 {
-                    Disconnected?.Invoke(this, EventArgs.Empty);
+                    await Task.Delay(3000, _cancellationTokenSource.Token);
+
+                    if (_cancellationTokenSource.IsCancellationRequested) return;
+
+                    var keepAlivePacket = new CommandNetworkRequest("");
+
+                    Send(keepAlivePacket);
+                    keepAlivePacket.WaitUntilAcknowledged(5000);
+
+                    if (keepAlivePacket.Acknowledged) continue;
+
+                    try
+                    {
+                        Disconnected?.Invoke(this, EventArgs.Empty);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
-                catch
-                {
-                    // ignored
-                }
+            }
+            catch
+            {
+                // ignored
             }
         }
 
         public void Dispose()
         {
+            _cancellationTokenSource.Cancel();
+            
             try
             {
                 _udpClient?.Close();

@@ -290,6 +290,8 @@ namespace BytexDigital.BattlEye.Rcon
 
                     IsConnected = true;
                     Connected?.Invoke(this, EventArgs.Empty);
+
+                    return true;
                 }
             }
 

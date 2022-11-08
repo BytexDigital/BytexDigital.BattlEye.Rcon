@@ -136,7 +136,25 @@ namespace BytexDigital.BattlEye.Rcon
         public void Dispose()
         {
             _cancellationTokenSource.Cancel();
+
+            try
+            {
+                _udpClient.Client.SendBufferSize = 0;
+            }
+            catch
+            {
+                // ignored
+            }
             
+            try
+            {
+                _udpClient.Client.Shutdown(SocketShutdown.Both);
+            }
+            catch
+            {
+                // ignored
+            }
+
             try
             {
                 _udpClient?.Close();

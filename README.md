@@ -1,4 +1,4 @@
-![Nuget](https://img.shields.io/nuget/v/BytexDigital.BattlEye.Rcon.svg?style=flat-square)
+![Nuget (with prereleases)](https://img.shields.io/nuget/vpre/BytexDigital.BattlEye.Rcon)
 
 # BytexDigital.BattlEye.Rcon
 
